@@ -1,21 +1,17 @@
 ---
-title: "How to Prepare for Your Fellowship.ai Application"
+title: "How to Prepare for Fellowship.ai Application"
 description: "A quick guide for prospective fellows"
 layout: post
 toc: false
 comments: true
 hide: false
 search_exclude: false
-categories: [fellowship, guide]
+categories: [fellowship]
 ---
-
-
-# How to Prepare for Your Fellowship.ai Application
-> A quick guide for prospective fellows 
 
 Being midway through my journey with Fellowship.ai, I decided to share some aspects that might help those who are considering applying to the program. 
 
-I first came across Fellowship.ai about a couple of years back when I was going through fast.ai courses. It sounded really compelling, but it was a big commitment for me at the time as the program was in-person and at a handful of cities. This meant that I had to relocate to one of those cities for the entire period of the program. 
+I first came across [Fellowship.ai](https://www.fellowship.ai/) about a couple of years back when I was going through fast.ai courses. It sounded really compelling, but it was a big commitment for me at the time as the program was in-person and at a handful of cities. This meant that I had to relocate to one of those cities for the entire period of the program. 
 
 Luckily, this has changed and the program is now fully remote. This makes it a very convenient option for aspiring data scientists and machine learning engineers. 
 
@@ -51,12 +47,12 @@ The program is offered three times a year; make sure to choose the best period t
 
 ## Handy resources 
 
-- **AMA sessions:** Fellowship.ai regularly hosts online sessions to answer questions related to the program. 
+- **AMA sessions:** Fellowship.ai regularly hosts online [sessions](https://www.fellowship.ai/ama) to answer questions related to the program. 
     > This was a very crucial resource for me. I was almost ready to submit my solution to the challenge when I decided to join one of those sessions. Fortunately, the feedback I got from the session led me to further improve my approach by exploring new techniques that I have not used before. It took me almost three weeks to revise the submission, but this had paid off and I received the offer to join the program in about two weeks time. 
-- **Guidelines:** There is a list of guidelines for submitting a compelling solution on the program's website. As you progress with your development, revisit those points and you will probably find new ways to enhance your methodology.  
-- **Fast.ai courses:** In my opinion, fast.ai courses are a great way to get started with deep learning. Those courses get you up to speed with foundational concepts of machine learning as well as state-of-the-art techniques in applying deep learning to various tasks in computer vision, NLP, tabular data, etc.  
+- **Guidelines:** There is a list of [guidelines](https://www.fellowship.ai/guidelines) for submitting a compelling solution on the program's website. As you progress with your development, revisit those points and you will probably find new ways to enhance your methodology.  
+- **Fast.ai courses:** In my opinion, fast.ai [courses](https://course.fast.ai/) are a great way to get started with deep learning. Those courses get you up to speed with foundational concepts of machine learning as well as state-of-the-art techniques in applying deep learning to various tasks in computer vision, NLP, tabular data, etc.  
 
 
 ## Final remarks
 
-I feel very content with my journey in the program thus far. There are a lot of things that I have learned along the way. If you would like to know more how a typical day is for fellows, please stay tuned. I will be sharing my review of the program and highlighting what I have learned once the program ends. 
+I feel very content with my journey in the program so far. There are a lot of things that I have learned along the way. If you would like to know more how a typical day is for fellows, please stay tuned. I will be sharing my review of the program and highlighting what I have learned once the program ends. 
