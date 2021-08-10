@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MixUp: copy | Feras C. Oughali</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MixUp: copy" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A dive into the implementation" />
+<meta property="og:description" content="A dive into the implementation" />
+<link rel="canonical" href="https://feras-oughali.github.io/blog/fastai/mixup/2021/05/10/mixup-Copy1.html" />
+<meta property="og:url" content="https://feras-oughali.github.io/blog/fastai/mixup/2021/05/10/mixup-Copy1.html" />
+<meta property="og:site_name" content="Feras C. Oughali" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-10T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://feras-oughali.github.io/blog/fastai/mixup/2021/05/10/mixup-Copy1.html","@type":"BlogPosting","headline":"MixUp: copy","dateModified":"2021-05-10T00:00:00-05:00","datePublished":"2021-05-10T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://feras-oughali.github.io/blog/fastai/mixup/2021/05/10/mixup-Copy1.html"},"description":"A dive into the implementation","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://feras-oughali.github.io/blog/feed.xml" title="Feras C. Oughali" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Feras C. Oughali</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MixUp: copy</h1><p class="page-description">A dive into the implementation</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-05-10T00:00:00-05:00" itemprop="datePublished">
+        May 10, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      6 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#fastai">fastai</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#mixup">mixup</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-05-10-mixup-Copy1.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this post, we get to know the benefits of using mixup and how to implement it in practice. We dive into the official implementation of the MixUp paper and compare it to the implementation of the famous <a href="https://github.com/fastai/fastai">fastai</a> library.</p>
+<p>Mixup was introduced in this <a href="https://arxiv.org/abs/1710.09412">paper</a>. Mixup is a simple technique for data augmentation, yet it has several advantages. As stated by the authors, mixup does:</p>
+<ul>
+<li>regularize neural networks to favor simple linear behavior among training examples. </li>
+<li>improve the generalization of state-of-the-art neural network architectures. </li>
+<li>reduce the memorization of corrupt labels.</li>
+<li>increase the robustness to adversarial examples.</li>
+<li>stabilize the training of generative adversarial networks (GANs).</li>
+</ul>
+<p>The contributions from paper can be summarized by the following snapshot.</p>
+<h2 id="How-can-we-implement-mixup-in-practice?">How can we implement mixup in practice?<a class="anchor-link" href="#How-can-we-implement-mixup-in-practice?"> </a></h2><p>The <a href="https://github.com/fastai/fastbook/blob/master/07_sizing_and_tta.ipynb">fastbook</a>, by Jeremy Howard and Sylvain Gugger, does a great job in simplifying the concept. Essentially, mixup can be implemented with 4 simple steps; for each image:</p>
+<ol>
+<li>Select another image from the dataset at random.</li>
+<li>Pick a random weight.</li>
+<li>Take a weighted sum (i.e., a linear combination) of the selected image with the original image. This will form the independent variable.</li>
+<li>Take a weighted sum (using the same weight from step 2) of the labels of those two images. This will produce the dependent variable.</li>
+</ol>
+<p>There is one additional requirement that the labels have to be one-hot encoded.</p>
+<p>This sound really great!</p>
+<h3 id="Official-implementation">Official implementation<a class="anchor-link" href="#Official-implementation"> </a></h3><p>Let's check the corresponding <a href="https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py">code</a> from the official implementation of the paper.</p>
+<p>The random weight is sampled from Beta distribution</p>
+<p><code>lam = np.random.beta(alpha, alpha)</code></p>
+<p>In practice, the random images are selected from within a mini batch rather than the whole dataset for convenience.</p>
+<p><code>index = torch.randperm(batch_size)</code></p>
+<p>The inputs are then mixep using a weighted sum with a random permutation of those same inputs</p>
+<p><code>mixed_x = lam * x + (1 - lam) * x[index, :]</code></p>
+<p>So far so good.</p>
+<p>However, when we come to the point of mixing the labels we notice a deviation from the description above.</p>
+<p><code>y_a, y_b = y, y[index]</code></p>
+<p>we notice that labels are not being mixed when preparing the data. In addition, labels are not one-hot encoded in this particular case. We can confirm this by examining the loss function being used.</p>
+
+<pre><code>criterion = nn.CrossEntropyLoss()
+def mixup_criterion(criterion, pred, y_a, y_b, lam):
+    return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)</code></pre>
+<p><code>CrossEntropyLoss</code> as defined in <a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html">Pytorch</a> does not accept one-hot encoded labels. We also notice a weighted sum of losses with respect to the original labels <code>y_a</code> and the permutation labels <code>y_b</code>, rather than the loss between predictions and a weighted some of labels.</p>
+<p>what is wrong here?</p>
+<p>Actually, there is nothing wrong! It turns out that this implementation is equivalent to the previous description. It is just easier to exploit this fact and use the existing labels and loss function (i.e., there is no need to convert labels to be one-hot encoded or change the loss function to accept such labels).</p>
+<p>We will confirm this fact with a simplistic example.</p>
+<p>Let <code>pred</code> be a batch of 4 predictions corresponding to mixed inputs <code>mixed_x</code>, <code>y_a</code> a batch of labels associated with the original inputs, and <code>y_b</code> a batch of labels associated with permuted inputs.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install -Uqq fastai
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>     |████████████████████████████████| 188 kB 9.3 MB/s 
+     |████████████████████████████████| 56 kB 2.6 MB/s 
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.basics</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pred</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
+<span class="n">pred</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([[0.8000, 0.2000],
+        [0.7000, 0.3000],
+        [0.4000, 0.6000],
+        [0.6000, 0.4000]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([0, 0, 1, 1])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+<span class="n">index</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([0, 3, 2, 1])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_a</span><span class="p">,</span> <span class="n">y_b</span> <span class="o">=</span> <span class="n">yb</span><span class="p">,</span> <span class="n">yb</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+<span class="n">y_a</span><span class="p">,</span> <span class="n">y_b</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(tensor([0, 0, 1, 1]), tensor([0, 1, 1, 0]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lam</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">lam</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor(0.3000)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">mixup_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">y_a</span><span class="p">,</span> <span class="n">y_b</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">loss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y_a</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span> <span class="o">*</span> <span class="n">loss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">y_b</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mixup_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">y_a</span><span class="p">,</span> <span class="n">y_b</span><span class="p">,</span> <span class="n">lam</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([0.4375, 0.7930, 0.5981, 0.6581])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To this point, we obtained the loss as computed by the official implementation. We set the <em>reduction</em> to <code>"none"</code> in order to show all the components of the loss. However, the mean of those values should be computed in practice.</p>
+<p>In the following section, we will implement the loss as described in fastbook and in the paper.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">one_hot_y_a</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">one_hot_y_a</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([[1, 0],
+        [1, 0],
+        [0, 1],
+        [0, 1]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">one_hot_y_b</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">one_hot_y_b</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([[1, 0],
+        [0, 1],
+        [0, 1],
+        [1, 0]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mixed_y</span> <span class="o">=</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">one_hot_y_a</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lam</span><span class="p">)</span> <span class="o">*</span> <span class="n">one_hot_y_b</span>
+<span class="n">mixed_y</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([[1.0000, 0.0000],
+        [0.3000, 0.7000],
+        [0.0000, 1.0000],
+        [0.7000, 0.3000]])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We notice here that the first and the third labels did not change when compared with the original labels. This is because we are mixing with the same labels in these cases.</p>
+<p>Next, we define a version of the cross entropy loss that accepts one-hot encoded labels (or a weighted sum of one-hot encoded labels to be precise; those are also called soft labels as opposed to hard labels i.e., zero or one).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">one_hot_CELoss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+  <span class="n">logsoftmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">target</span> <span class="o">*</span> <span class="n">logsoftmax</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">one_hot_CELoss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">mixed_y</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:3: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  This is separate from the ipykernel package so we can avoid doing imports until
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([0.4375, 0.7930, 0.5981, 0.6581])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_close</span><span class="p">(</span><span class="n">one_hot_CELoss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">mixed_y</span><span class="p">)</span> <span class="p">,</span> <span class="n">mixup_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">y_a</span><span class="p">,</span> <span class="n">y_b</span><span class="p">,</span> <span class="n">lam</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Hooray! The results are matching.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fastai-Implementation">Fastai Implementation<a class="anchor-link" href="#Fastai-Implementation"> </a></h3><p>Fastai follows the official implementation of drawing the random images from the mini batch. The <a href="https://github.com/fastai/fastai/blob/master/fastai/callback/mixup.py">code</a> looks a bit different as fastai uses some functionalities of the <code>L</code> class from <a href="https://fastcore.fast.ai/">fastcore</a>.</p>
+
+<pre><code>shuffle = torch.randperm(self.y.size(0)).to(self.x.device)
+xb1,self.yb1 = tuple(L(self.xb).itemgot(shuffle)),tuple(L(self.yb).itemgot(shuffle))</code></pre>
+<p>Similarly, fastai's implementation mixes the inputs and takes a mix of losses instead of mixing one-hot encoded labels.</p>
+<p><code>self.learn.xb = tuple(L(xb1,self.xb).map_zip(torch.lerp,weight=unsqueeze(self.lam, n=nx_dims-1)))</code></p>
+<p><code>loss = torch.lerp(lf(pred,*self.yb1), lf(pred,*yb), self.lam)</code></p>
+<p>But wait a minute!</p>
+<p>Looks like there is no weighted sum in here. We notice the use of <code>torch.lerp</code> instead. If you look up the <a href="https://pytorch.org/docs/stable/generated/torch.lerp.html">documentation</a> of <code>torch.lerp</code>, you will find out the it does something like this:</p>
+<p><code>torch.lerp(input, end, weight, *, out=None)</code></p>
+<p>$out_{i} = input_{i} + weight_{i} \times (end_{i}-input_{i})$</p>
+<p>with simple refactoring we can see that:</p>
+<p>$out_{i} = input_{i} + weight_{i} \times end_{i} - weight_{i} \times input_{i}$</p>
+<p>$out_{i} = (1-weight_{i}) \times input_{i} + weight_{i} \times end_{i}$</p>
+<p>which is the weighted sum of the two tensors <code>input</code> and <code>end</code>.</p>
+<p>But why not simply use a clear weighted sum instead of <code>torch.lerp</code>?!</p>
+<p>The answer is performance! Pytorch has very optimized low level implementations for certain operations which is usually much faster. Let's confirm this with a little experiment.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">64</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">400</span><span class="p">))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">64</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">400</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> -n100 ((1-lam)*a + lam*b)
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>100 loops, best of 5: 32.6 ms per loop
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> -n100 torch.lerp(a,b,lam)
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>100 loops, best of 5: 12.7 ms per loop
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="mf">32.6</span><span class="o">/</span><span class="mf">12.7</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>2.566929133858268</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>we can see over 2.5X speed-up boost when using <code>torch.lerp</code>. And since we are talking about <strong><em>fast</em></strong>ai, it's better be using <code>torch.lerp</code>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="feras-oughali/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/fastai/mixup/2021/05/10/mixup-Copy1.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Blog</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/feras-oughali" title="feras-oughali"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/ferasoughali" title="ferasoughali"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li><li><a rel="me" href="https://twitter.com/Feras_Oughali" title="Feras_Oughali"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
