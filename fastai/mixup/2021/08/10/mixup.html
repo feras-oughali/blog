@@ -110,27 +110,6 @@ window.onload = wrap_img;
     
 
     
-      
-        <div class="pb-5 d-flex flex-wrap flex-justify-end">
-          <div class="px-2">
-
-    <a href="https://github.com/feras-oughali/blog/tree/master/_notebooks/2021-08-10-mixup.ipynb" role="button" target="_blank">
-<img class="notebook-badge-image" src="/blog/assets/badges/github.svg" alt="View On GitHub">
-    </a>
-</div>
-
-          <div class="px-2">
-    <a href="https://mybinder.org/v2/gh/feras-oughali/blog/master?filepath=_notebooks%2F2021-08-10-mixup.ipynb" target="_blank">
-        <img class="notebook-badge-image" src="/blog/assets/badges/binder.svg" alt="Open In Binder"/>
-    </a>
-</div>
-
-          <div class="px-2">
-    <a href="https://colab.research.google.com/github/feras-oughali/blog/blob/master/_notebooks/2021-08-10-mixup.ipynb" target="_blank">
-        <img class="notebook-badge-image" src="/blog/assets/badges/colab.svg" alt="Open In Colab"/>
-    </a>
-</div>
-        </div>
       </header>
 
   <div class="post-content e-content" itemprop="articleBody">
@@ -155,6 +134,7 @@ window.onload = wrap_img;
 <li>stabilize the training of generative adversarial networks (GANs).</li>
 </ul>
 <p>The contributions from paper can be summarized by the following snapshot.</p>
+<p><img src="/blog/images/copied_from_nb/my_icons/mixup-paper.png" alt="" /></p>
 <h2 id="How-can-we-implement-mixup-in-practice?">How can we implement mixup in practice?<a class="anchor-link" href="#How-can-we-implement-mixup-in-practice?"> </a></h2><p>The <a href="https://github.com/fastai/fastbook/blob/master/07_sizing_and_tta.ipynb">fastbook</a>, by Jeremy Howard and Sylvain Gugger, does a great job in simplifying the concept. Essentially, mixup can be implemented with 4 simple steps; for each image:</p>
 <ol>
 <li>Select another image from the dataset at random.</li>
