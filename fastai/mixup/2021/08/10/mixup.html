@@ -134,7 +134,7 @@ window.onload = wrap_img;
 <li>stabilize the training of generative adversarial networks (GANs).</li>
 </ul>
 <p>The contributions from paper can be summarized by the following snapshot.</p>
-<p><img src="/blog/images/copied_from_nb/my_icons/mixup-paper.png" alt="snapshot from Mixup paper" />
+<p><img src="/blog/images/copied_from_nb/my_icons/mixup-paper.png" alt="" title="snapshot from Mixup paper" />
 <em>snapshot from Mixup paper</em></p>
 <h2 id="How-can-we-implement-mixup-in-practice?">How can we implement mixup in practice?<a class="anchor-link" href="#How-can-we-implement-mixup-in-practice?"> </a></h2><p>The <a href="https://github.com/fastai/fastbook/blob/master/07_sizing_and_tta.ipynb">fastbook</a>, by Jeremy Howard and Sylvain Gugger, does a great job in simplifying the concept. Essentially, mixup can be implemented with 4 simple steps; for each image:</p>
 <ol>
@@ -193,7 +193,8 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pred</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># predictions of a small batch of size 4</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
 <span class="n">pred</span>
 </pre></div>
 
@@ -230,7 +231,8 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># original labels</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">y</span>
 </pre></div>
 
